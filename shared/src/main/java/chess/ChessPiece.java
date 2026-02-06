@@ -1,6 +1,9 @@
 package chess;
 
+import chess.ChessPieceTypes.*;
+
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -9,8 +12,31 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessPiece {
+    ChessGame.TeamColor pieceColor;
+    PieceType type;
 
-    public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
+    }
+
+    @Override
+    public String toString() {
+        return this.pieceColor + " " + this.type;
+    }
+
+    public ChessPiece(ChessGame.TeamColor pieceColor, PieceType type) {
+        this.pieceColor = pieceColor;
+        this.type = type;
     }
 
     /**
@@ -29,14 +55,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return this.pieceColor;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return this.type;
     }
 
     /**
@@ -46,7 +72,16 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition position) {
+        ChessPiece piece = board.getPiece(position);
+        if (piece == null) return null;
+        return switch (piece.getPieceType()) {
+            case KING -> new King().getPieceMoves(board, position);
+            case QUEEN -> new Queen().getPieceMoves(board, position);
+            case BISHOP -> new Bishop().getPieceMoves(board, position);
+            case KNIGHT -> new Knight().getPieceMoves(board, position);
+            case ROOK -> new Rook().getPieceMoves(board, position);
+            case PAWN -> new Pawn().getPieceMoves(board, position, piece.getTeamColor());
+        };
     }
 }

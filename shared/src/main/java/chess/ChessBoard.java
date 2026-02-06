@@ -1,5 +1,8 @@
 package chess;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -7,9 +10,48 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
+    ChessPiece[][] Board;
 
     public ChessBoard() {
-        
+        this.Board = new ChessPiece[8][8];
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(Board, that.Board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(Board);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder string = new StringBuilder();
+        string.append("   A B C D E F G H\n");
+
+        for (int rowCounter = 7; rowCounter >= 0; rowCounter--) {
+            ChessPiece[] row = this.Board[rowCounter];
+
+            string.append(rowCounter + 1);
+            string.append(" ");
+
+            for (ChessPiece piece : row) {
+                string.append("|");
+                string.append(getPieceChar(piece));
+            }
+            string.append("| ");
+            string.append(rowCounter + 1);
+            string.append("\n");
+        }
+
+        string.append("   A B C D E F G H\n");
+        return string.toString();
     }
 
     /**
@@ -19,7 +61,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        this.Board[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
     /**
@@ -30,7 +72,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return this.Board[position.getRow() - 1][position.getColumn() - 1];
     }
 
     /**
@@ -38,6 +80,49 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        this.Board[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+        this.Board[0][1] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        this.Board[0][2] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+        this.Board[0][3] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
+        this.Board[0][4] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
+        this.Board[0][5] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
+        this.Board[0][6] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+        this.Board[0][7] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
+
+        for (int i = 0; i < 8; i++) {
+            this.Board[1][i] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
+        }
+
+        this.Board[7][0] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+        this.Board[7][1] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        this.Board[7][2] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        this.Board[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
+        this.Board[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
+        this.Board[7][5] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        this.Board[7][6] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
+        this.Board[7][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+
+        for (int i = 0; i < 8; i++) {
+            this.Board[6][i] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
+        }
+    }
+
+    private String getPieceChar(ChessPiece piece) {
+        if (piece == null) return ".";
+
+        String character = switch (piece.getPieceType()) {
+            case KING -> "K";
+            case QUEEN -> "Q";
+            case BISHOP -> "B";
+            case KNIGHT -> "N";
+            case ROOK -> "R";
+            case PAWN -> "P";
+        };
+
+        if (piece.getTeamColor() == ChessGame.TeamColor.BLACK) {
+            character = character.toLowerCase();
+        }
+
+        return character;
     }
 }
